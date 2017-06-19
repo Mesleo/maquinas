@@ -1,0 +1,436 @@
+{# src/UserBundleBundle/Events/machines_ubications.html.twig #}
+{% extends 'FrontBundle:Base:index.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bower_components/sweetalert/dist/sweetalert.css') }}">
+{% endblock %}
+
+{% block body %}
+    <section>
+        <article>
+            <header>
+                <h2>Máquinas - {{ user.nombre }}</h2>
+                <button id="close-session" class="btn btn-warning">Salir</button>
+            </header>
+            {#<h1>{{ info }}</h1>#}
+            <div class="content">
+                {% if info is defined and info != "" %}
+                    <p class="alert alert-info">{{ info }}</p>
+                {% endif %}
+                <div class="row">
+                    <form action="{{ path('show_ubications') }}" method="post">
+                        <div class="col-xs-12 col-sm-7">
+                            <select name="machine" id="machine" class="form-control">
+                                <option value="-">- Elige máquina -</option>
+                                {% for machine in machines %}
+                                    <option value="{{ machine.id }}" {% if app.session.get('machine') and app.session.get('machine') == machine.id %} selected {% endif %}>{{ machine.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-xs-12 col-sm-5">
+                            <button type="submit" id="btn-view-ubication" class="btn btn-alert">Ver ubicación</button>
+                        </div>
+                    </form>
+                </div>
+                <form action="{{ path('ubication_add') }}" method="post">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <input type="text" class="hidden" name="mach" id="mach"  value="{% if app.session.get('machine') != null %}{{ app.session.get('machine') }}{% else %}-{% endif %}">
+                            <input type="text" class="hidden" name="latitude" id="latitude" value="">
+                            <input type="text" class="hidden" name="longitude" id="longitude" value="">
+                            <input type="text" class="form-control" name="new-ubication" id="new-ubication" placeholder="Plaza de Toros...">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <input type="hidden" name="btnPress" id="btnPress">
+                        <div class="col-xs-6">
+                            <button type="submit" id="btn-nave" name="btn-nave" title="Guardar la máquina en Nave" data-val="1" class="btn btn-warning">Nave</button>
+                        </div>
+                        <div class="col-xs-6">
+                            <button type="button" id="btn-save" name="btn-save" data-val="2" class="btn btn-danger">Guardar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </article>
+        {% if ubications is defined and ubications != null %}
+            {% include "FrontBundle:Modal:map.html.twig" %}
+            {% include "FrontBundle:Pages:ubications.html.twig" %}
+        {% endif %}
+    </section>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('bower_components/sweetalert/dist/sweetalert.min.js') }}"></script>
+    <script>
+        var vM = true, myMap = null, center = null, latitude = Number('38.359916328178414'), longitude = Number('-4.841393977403641'),
+                markers = [], inputSearch, searchBox, latitudClient = null, longitudClient = null;
+
+        // Sets the map on all markers in the array.
+        function setMapOnAll(myMap) {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(myMap);
+            }
+        }
+
+        // Removes the markers from the map, but keeps them in the array.
+        function clearMarkers() {
+            setMapOnAll(null);
+        }
+
+        // Deletes all markers in the array by removing references to them.
+        function deleteMarker() {
+            clearMarkers();
+            markers = [];
+        }
+
+        //Adds a marker to the map and push to the array.
+        function addMarker(location) {
+            marker = new google.maps.Marker({
+                position: location,
+                title: "¿Dónde estoy?"
+            });
+            mLatLng = marker.getPosition();
+
+            markers.push(marker);
+            marker.setMap(myMap);
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) { // If navigator supported geolocation
+                navigator.geolocation.getCurrentPosition(coordinates, showError);
+            } else {
+                swal("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    swal("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    swal("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    swal("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    swal("An unknown error occurred.");
+                    break;
+            }
+        }
+
+        /**
+         * Show map of ubication machine
+         */
+        function loadMap() {
+            var coorMarcador = new google.maps.LatLng(latitude, longitude); // New point with ours coordinates for mark
+
+            myMap = new google.maps.Map(document.getElementById('map'), {
+                center: coorMarcador,
+                zoom: 13,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+
+            addMarker(coorMarcador);
+
+            // Asigns a icon and gets longitude y latitude when clicks a position
+            google.maps.event.addListener(myMap, 'click', function (event) {
+                deleteMarker();
+                $('input#latitude').val(event.latLng.lat());
+                $('input#latitude').value = event.latLng.lat();
+                $('input#longitude').val(event.latLng.lng());
+                $('input#longitude').value = event.latLng.lng();
+                addMarker(event.latLng);
+            });
+
+            // Create the search box and link it to the UI element.
+            inputSearch = document.getElementById('pac-input');
+
+            searchBox = new google.maps.places.SearchBox(inputSearch);
+            myMap.controls[google.maps.ControlPosition.TOP_LEFT].push(inputSearch);
+
+
+            // Bias the SearchBox results towards current map's viewport.
+            myMap.addListener('bounds_changed', function() {
+                searchBox.setBounds(myMap.getBounds());
+            });
+
+            var markers = [];
+            // Listen for the event fired when the user selects a prediction and retrieve
+            // more details for that place.
+            searchBox.addListener('places_changed', function(event) {
+                var places = searchBox.getPlaces();
+
+                if (places.length == 0) {
+                    return;
+                }
+
+                // Asigno la latitud y longitud del resultado más cercano
+                latitude = places[0].geometry.location.lat();
+                longitude = places[0].geometry.location.lng();
+
+                var coorMarcador = new google.maps.LatLng(latitude, longitude);
+
+                deleteMarker();
+                addMarker(coorMarcador);
+
+                // For each place, get the icon, name and location.
+                var bounds = new google.maps.LatLngBounds();
+                places.forEach(function (place) {
+
+                    // Reorganiza el mapa en torno a la posición encontrada
+                    if (place.geometry.viewport) {
+                        // Only geocodes have viewport.
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
+                });
+
+                $('input#latitude').val(coorMarcador.lat());
+                $('input#latitude').value = coorMarcador.lat();
+                $('input#longitude').val(coorMarcador.lng());
+                $('input#longitude').value = coorMarcador.lng();
+                myMap.fitBounds(bounds);
+            });
+
+            if(latitude != "38.378537721521774" && longitude != "-4.84797477722168") {
+                if (marker != null) {
+                    latitude = marker.getPosition().lat();
+                    longitude = marker.getPosition().lng();
+                }
+                writeUbication();
+                $('#modalMap').fadeOut();
+                vM = false;
+            }
+        }
+
+        function coordinates(position) {
+            if(position != null) {
+                // Save ours latitude
+                latitude = position.coords.latitude;
+                latitudClient = position.coords.latitude;
+
+                // Save ours longitude
+                longitude = position.coords.longitude;
+                longitudClient = position.coords.longitude;
+            }
+            loadMap();
+        }
+
+        /**
+         * Gets geolocation for Google API and submit function for print map
+         */
+        function writeUbication() {
+            var result;
+            center = new google.maps.LatLng(latitude, longitude);
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode({'location': center}, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {// Si hay conexión correcta
+                    result = new Array(results[0].address_components)[0];
+                }
+            });
+        }
+
+        function generateIframeMap(param, modeRoute){
+            var la = param.attr('data-lat');
+            var ln = param.attr('data-lng');
+            var idInfo = param.attr('data-id');
+            var modalInfo = $('.modal_'+idInfo);
+            var mapInfo = $('.map_'+idInfo);
+            var mode = 'driving';
+
+            if(latitudClient != null && longitudClient != null){
+                latitude = latitudClient;
+                longitude = longitudClient;
+            }
+
+            switch (modeRoute){
+//                case '3':
+//                    mode = 'transit';
+//                    break;
+                case '2':
+                    mode = 'bicycling';
+                    break;
+                case '1':
+                    mode = 'walking';
+                    break;
+                default:
+                    mode = 'driving';
+                    break;
+            }
+
+
+            mapInfo.html('<iframe width="100%" height="400" frameborder="0" style="border:0" ' +
+                    'src="https://www.google.com/maps/embed/v1/directions?'+
+                    'origin='+latitude+','+longitude+'&destination='+la+','+ln+'&key=AIzaSyArhI7ku-hhBuVB8Y5DS9Ddm5jJwp4jUAs' +
+                    '&mode='+mode+''+
+                    '&avoid=tolls|highways" allowfullscreen></iframe>');
+            modalInfo.fadeIn();
+        }
+
+        // When click in div ubication
+        $("div.location").on('click', function(e){
+            e.preventDefault();
+            if($(this).attr('data-lat') != null) {
+                $('button[name=mode]').each(function () {
+                    $(this).removeClass('btn-info');
+                    if ($(this).attr('data-mode') == '0') {
+                        $(this).addClass('btn-info');
+                    }
+                });
+                generateIframeMap($(this), 1);
+            }
+        });
+
+        $('button[name=mode]').on('click', function(){
+            var $button = $(this);
+            var ubicationData = $(this).parent('span').parent('div');
+            $('button[name=mode]').each(function(){
+                if($(this) != $button){
+                    $(this).removeClass('btn-info');
+                    $(this).addClass('btn-default');
+                }
+            });
+            $button.toggleClass('btn-info');
+            generateIframeMap(ubicationData, $button.attr('data-mode'));
+        });
+
+    </script>
+    <script>
+        (function(){
+            var idMach, selectMach, inputHiddenMach, newUbication;
+
+            // Close modal geolocation
+            $(".close_modal_ubication").click(function(){
+                $(".modal").fadeOut(300);
+                vM = false;
+            });
+
+            // Close iframe map
+            $(".close_modal").click(function(){
+                $(".modal").fadeOut(300);
+            });
+
+            function initVars(){
+                selectMach = $('select[name=machine]');
+                inputHiddenMach = $('input#mach');
+                newUbication = $('input#new-ubication');
+                newUbication.focus();
+            }
+
+            function inputFocus(){
+                newUbication.focus();
+            }
+
+            initVars();
+
+            selectMach.on('change', function () {
+                idMach = $(this).val();
+                inputHiddenMach.val(idMach);
+                inputHiddenMach.value = idMach;
+            });
+
+            $('button.del-ubi').on('click', function (e) {
+                var that = $(this);
+                var form = that.parent('form');
+                e.preventDefault();
+                swal({
+                            title: "¿Estás seguro?",
+                            text: "No podrás recuperar la ubicación",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Si, eliminar!",
+                            closeOnConfirm: false
+                        },
+                        function(){
+                            form.submit();
+                        });
+            });
+
+            function changeUbicationMachine(a, e, question) {
+                e.preventDefault();
+                if(!isNaN($('#mach').val())) {
+                    var form = a.parent('div').parent('div').parent('form');
+                    $('#btnPress').val(a.attr('data-val'));
+                    swal({
+                                title: "¿Estás seguro?",
+                                text: question,
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "Si, cambiar!",
+                                cancelButtonText: "Cancelar",
+                                closeOnConfirm: false
+                            },
+                            function () {
+                                form.submit();
+                            });
+                }else{
+                    swal("¡Debes seleccionar una máquina!");
+                }
+            }
+
+            $('button#btn-save').on('click', function (e) {
+                if(newUbication.val().length > 2) {
+                    e.preventDefault();
+                    if(vM) {
+                        google.maps.event.addDomListener(window, 'load', loadMap());
+                        vM = false;
+                    }
+                    $("#modalMap").fadeIn();
+                }else{
+                    swal("¡Advertencia!", "¡Debes escribir al menos 3 caracteres!", "warning");
+                    $('button.confirm').on('click', function () {
+                        inputFocus();
+                    });
+                }
+            });
+
+            $('button#btn-nave').on('click', function (e) {
+                var q = "¿Guardar esta máquina en la nave?";
+                changeUbicationMachine($(this), e, q);
+            });
+
+            $('button.no-location').on('click', function (e) {
+                latitude = null;
+                longitude = null;
+                marker = null;
+                $('input#latitude').val("");
+                $('input#latitude').value = "";
+                $('input#longitude').val("");
+                $('input#longitude').value = "";
+                var q = "¿Quieres cambiar la ubicación a esta máquina?";
+                changeUbicationMachine($('button#btn-save'), e, q);
+            });
+
+            // When presses button "Save" in map asigns his latitude and longitude and the modal is hidden
+            $('#save-ubication').on('click', function(e){
+                var q = "¿Quieres cambiar la ubicación a esta máquina?";
+                e.preventDefault();
+                console.log(latitude);
+                console.log(longitude);
+                if(marker != null) {
+                    latitude = marker.getPosition().lat();
+                    longitude = marker.getPosition().lng();
+                }
+                writeUbication();
+                $('#mapModal').fadeOut();
+                vM = false;
+                changeUbicationMachine($('button#btn-save'), e, q);
+            });
+
+            $('button#close-session').on('click', function () {
+               window.location.href = "{{ path('clear_session') }}";
+            });
+
+            $(document).ready(function() {
+                vM = true;
+            });
+
+        })();
+    </script>
+{% endblock %}

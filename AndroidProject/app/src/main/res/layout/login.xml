@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingBottom="30dp"
+        android:elevation="5dp"
+        android:background="@drawable/background_login">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:layout_marginBottom="30dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ACCESO"
+                android:padding="7dp"
+                android:fontFamily="serif-monospace"
+                android:gravity="center_horizontal"
+                android:textSize="40dp"
+                android:textColor="#fffffa"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp">
+
+            <Spinner
+                android:id="@+id/spinnerUsers"
+                android:layout_width="250dp"
+                android:layout_height="60dp"
+                android:layout_centerHorizontal="true"
+                android:textAlignment="center"
+                android:padding="4dp"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="50dp"
+                android:backgroundTint="@color/colorSecundaryLight"
+                android:background="@drawable/background_spinner" />
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="250dp"
+                android:layout_height="60dp"
+                android:hint="Password"
+                android:padding="7dp"
+                android:inputType="textPassword"
+                android:textAlignment="center"
+                android:layout_below="@id/spinnerUsers"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/background_input"/>
+
+            <LinearLayout
+                android:id="@+id/layoutEnter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:gravity="center_horizontal"
+                android:layout_below="@id/etPassword">
+
+
+                <ImageButton
+                    android:id="@+id/btnChangePass1"
+                    android:text="Cambiar contraseña"
+                    android:layout_width="50dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_height="50dp"
+                    android:layout_marginRight="50dp"
+                    android:textColor="#fffffa"
+                    android:background="@drawable/change_pass" />
+
+                <Button
+                    android:id="@+id/btnSignIn"
+                    android:text="Entrar"
+                    android:layout_width="140dp"
+                    android:layout_height="70dp"
+                    android:textSize="20dp"
+                    android:textColor="#fffffa"
+                    android:background="@drawable/button_save_ubication"
+                    />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

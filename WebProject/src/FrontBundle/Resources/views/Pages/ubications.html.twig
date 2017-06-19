@@ -1,0 +1,70 @@
+<article>
+    <header>
+        <h2>Ubicaciones</h2>
+    </header>
+    <div class="content">
+        <div id="ubications">
+            {% for ub in ubications  %}
+                <div class="ubication">
+                    <div class="line-1">
+                        <div class="location" {% if ub.latitud != null and  ub.longitud != null %}
+                            data-lat="{{ ub.latitud }}" data-lng="{{ ub.longitud }}"{% endif %} data-id="{{ ub.id }}">{{ ub.ubicacion }}</div>
+                        {% if user.rol is defined and user.rol == 2 %}
+                            <div>
+                                <form action="{{ path('ubication_del') }}" method="post">
+                                    <input type="text" class="hidden" name="id-ubi" value="{{ ub.id }}">
+                                    <input type="text" class="hidden" name="date-ubi" value="{{ ub.fecha|date('Y-m-d H:i:s') }}">
+                                    <input type="text" class="hidden" name="id-mach" value="{{ ub.maquina }}">
+                                    <button type="button" class="btn btn-danger del-ubi" name="btn-del">Borrar</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="line-2">
+                        <div class="date">{{ ub.fecha|date('d-m-Y H:i:s') }}</div>
+                        <div class="user">{{ ub.usuario }}</div>
+                    </div>
+                </div>
+                <div class="modal_{{ ub.id }} modal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close close_modal" title="Cerrar ventana" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title">Ubicación</h4>
+                            </div>
+                            <div class="map_{{ ub.id }}" class="modal-body">
+                            </div>
+                            <div class="modal-footer">
+                                <div class="ubication_data" data-id="{{ ub.id }}"
+                                     data-lat="{{ ub.latitud }}" data-lng="{{ ub.longitud }}">
+                                    <span class="button-checkbox">
+                                        <button type="button" name="mode" data-mode="2" title="En bicicleta" class="btn btn-default">
+                                            <i class="fa fa-bicycle" aria-hidden="true"></i>
+                                            <span>En bici</span></button>
+                                        <input type="checkbox" class="hidden" />
+                                    </span>
+                                    <span class="button-checkbox">
+                                        <button type="button" name="mode" data-mode="1" title="Caminando" class="btn btn-default">
+                                            <i class="fa icon-walk" aria-hidden="true"></i>
+                                            <img class="img-walk" src="{{ asset('images/man_walk_black.png') }}" alt="Caminando">
+                                            <span>Caminando</span></button>
+                                        <input type="checkbox" class="hidden" />
+                                    </span>
+                                    <span class="button-checkbox">
+                                        <button type="button" name="mode" data-mode="0" title="En coche" class="btn btn-info">
+                                            <i class="fa fa-car" aria-hidden="true"></i>
+                                            <span>En coche</span></button>
+                                        <input type="checkbox" class="hidden" checked />
+                                    </span>
+                                </div>
+                                <button type="button" class="close_modal btn btn-default" title="Cerrar ventana" data-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</article>

@@ -1,0 +1,13 @@
+{# src/UserBundleBundle/Events/create_track.html.twig #}
+{% extends 'FrontBundle:Base:index.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bower_components/sweetalert/dist/sweetalert.css') }}">
+{% endblock %}
+{% block body %}
+    <h2 id="error">Acceso denegado</h2>
+    <div class="col-md-4 text-center">
+        <a href="{{ path('form_login') }}" class="btn btn-danger">Acceder</a>
+    </div>
+{% endblock %}

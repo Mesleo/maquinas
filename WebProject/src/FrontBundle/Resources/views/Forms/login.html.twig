@@ -1,0 +1,34 @@
+{# src/UserBundleBundle/Events/create_track.html.twig #}
+{% extends 'FrontBundle:Base:index.html.twig' %}
+
+{% block stylesheets %}
+
+{% endblock %}
+
+{% block body %}
+    <section>
+        <article>
+            <header>
+                <h2>Login</h2>
+            </header>
+            <div class="form-login">
+                <form action="{{ path('form_login') }}" method="post" >
+                    {% if info is defined and info != "" %}
+                        <p class="alert alert-danger">{{ info }}</p>
+                    {% endif %}
+                    {{ form_widget(form) }}
+                </form>
+            </div>
+        </article>
+    </section>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        (function(){
+            $('button.change_pass').on('click', function (e) {
+                e.preventDefault();
+                window.location.href = '{{ path('form_change_pass') }}';
+            })
+        })();
+    </script>
+{% endblock %}

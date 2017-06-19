@@ -1,0 +1,105 @@
+button[name=mode] > span{
+  display: none;
+}
+
+button[name=mode] > i.icon-walk{
+  background-image: url('../images/man_walk_black.png');
+}
+button[name=mode].btn-info > i.icon-walk{
+  background-image: url('../images/man_white.png');
+}
+
+.img-walk:not(.img-walk-white){
+  width: 13.5px;
+}
+
+.controls {
+  margin-top: 10px;
+  border: 1px solid transparent;
+  border-radius: 2px 0 0 2px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  height: 32px;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#map{
+  min-height: 340px;
+  width: 100%;
+}
+
+.modal{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background-color:rgba(0,0,0,.7);
+  display:none;
+  z-index: 999;
+}
+
+.modal > .modal-dialog{
+  height: auto;
+}
+
+.modal-backdrop{
+  z-index: 888;
+}
+
+#modalMap{
+  z-index: 1000 !important;
+}
+
+#modalMap .modal-body{
+  min-height: 400px;
+}
+
+#pac-input {
+  background-color: #fff;
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: 300;
+  margin-left: 12px;
+  padding: 0 11px 0 13px;
+  text-overflow: ellipsis;
+  width: 50%;
+}
+
+#pac-input:focus {
+  border-color: #4d90fe;
+}
+
+.pac-container {
+  font-family: Roboto;
+}
+
+
+#type-selector {
+  color: #fff;
+  background-color: #4d90fe;
+  padding: 5px 11px 0px 11px;
+}
+
+#type-selector label {
+  font-family: Roboto;
+  font-size: 13px;
+  font-weight: 300;
+}
+
+.ubication_data{
+  display: flex;
+  flex-direction: row;
+  span{
+    display: inline-flex;
+    margin-right: 10px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+
+  button[name=mode] > span {
+    display: inline-block;
+  }
+}

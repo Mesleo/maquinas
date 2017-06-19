@@ -1,0 +1,58 @@
+{# src/UserBundleBundle/Events/create_track.html.twig #}
+{% extends 'FrontBundle:Base:index.html.twig' %}
+
+{% block stylesheets %}
+
+{% endblock %}
+
+{% block body %}
+    <section>
+        <article>
+            <header>
+                <h2>Cambiar contraseña</h2>
+            </header>
+            <div class="form-change-pass">
+                <form action="{{ path('form_change_pass') }}" method="post">
+                    {% if info is defined and info != "" %}
+                    <p class="alert alert-danger">{{ info }}</p>
+                    {% endif %}
+                    <div id="appbundle_usuario">
+                        <div>
+                            <label for="appbundle_usuario_nombre" class="required">Nombre</label>
+                            <input type="text" id="appbundle_usuario_nombre" name="name" required="required">
+                        </div>
+                        <div>
+                            <label for="appbundle_usuario_password" class="required">Password</label>
+                            <input type="password" id="appbundle_usuario_password" name="pass" required="required">
+                        </div>
+                        <div>
+                            <label for="new_pass" class="required">Nueva contraseña</label>
+                            <input type="password" id="new_pass" name="new_pass" required="required">
+                        </div>
+                        <div>
+                            <label for="confirm_pass" class="required">Confirmar nueva contraseña</label>
+                            <input type="password" id="confirm_pass" name="confirm_pass" required="required">
+                        </div>
+                        <div>
+                            <button type="button" id="cancel" >Cancelar</button>
+                        </div>
+                        <div>
+                            <button type="submit" id="change" name="change">Cambiar</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </article>
+    </section>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        (function(){
+            $('button#cancel').on('click', function (e) {
+                e.preventDefault();
+                window.location.href = "{{ path('form_login') }}";
+            })
+        })();
+    </script>
+{% endblock %}

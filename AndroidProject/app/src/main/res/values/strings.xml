@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Máquinas</string>
+    <string name="title_activity_machines">MachinesActivity</string>
+    <string name="title_activity_maps">Map</string>
+</resources>

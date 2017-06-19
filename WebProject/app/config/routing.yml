@@ -1,0 +1,17 @@
+back:
+    resource: "@BackBundle/Controller/"
+    type:     annotation
+    prefix:   /gestion
+
+front:
+    resource: "@FrontBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+formulario:
+    path:     /login
+    defaults: { _controller: FrontBundle:Default:login }
+
+app:
+    resource: '@AppBundle/Controller/'
+    type: annotation

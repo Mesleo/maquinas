@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Máquinas</title>
+    <link rel="stylesheet" href="{{ asset('node_modules/bootstrap/dist/css/bootstrap.min.css') }}">
+    {#<link rel="stylesheet" href="/web/node_modules/bootstrap/dist/css/bootstrap.min.css">#}
+    <link rel="stylesheet" href="{{ asset('node_modules/bootstrap/dist/css/bootstrap-theme.min.css') }}">
+    {#<link rel="stylesheet" href="/web/node_modules/bootstrap/dist/css/bootstrap-theme.min.css">#}
+    <link rel="stylesheet" href="{{ asset('node_modules/bootstrap/dist/css/bootstrap-theme.min.css') }}">
+    {#<link rel="stylesheet" href="/web/node_modules/bootstrap/dist/css/bootstrap-theme.min.css">#}
+    <link href="{{ asset('front/css/font-awesome.min.css') }}" rel="stylesheet">
+    {#<link href="/web/front/css/font-awesome.min.css" rel="stylesheet">#}
+    <link rel="stylesheet" href="{{ asset('front/main.css') }}">
+    {#<link rel="stylesheet" href="/web/front/main.css">#}
+    <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+    {% block stylesheets %}
+    {% endblock %}
+</head>
+<body>
+<header>
+    <h1>Máquinas</h1>
+</header>
+<div class="container">
+    {% block body %}{% endblock %}
+</div>
+<footer>
+    <div id="website">
+        <p>This website design and build © Javier Benítez 2016.</p>
+    </div>
+    <div id="contacto">
+        <a href="https://www.facebook.com/javier.benitezdelpozo">
+            <picture>
+                <source srcset="/images/ico_facebook_m.png" media="(min-width: 650px)">
+                <img src="/images/ico_facebook_s.png" alt="Facebook" title="https://www.facebook.com/javier.benitezdelpozo">
+            </picture></a>
+        <a href="https://github.com/Mesleo"><picture>
+                <source srcset="/images/ico_github_m.png" media="(min-width: 650px)">
+                <img src="/images/ico_github_s.png" alt="Github" title="https://github.com/Mesleo">
+            </picture></a>
+        <a href="https://twitter.com/jbenitezdelpozo"><picture>
+                <source srcset="/images/ico_twitter_m.png" media="(min-width: 650px)">
+                <img src="/images/ico_twitter_s.png" alt="Twitter" title="https://twitter.com/jbenitezdelpozo">
+            </picture></a>
+        <a href="https://www.linkedin.com/in/francisco-javier-benítez-del-pozo-56833a8a"><picture>
+                <source srcset="/images/ico_linkedin_m.png" media="(min-width: 650px)">
+                <img src="/images/ico_linkedin_s.png" alt="LinkedIn" title="https://www.linkedin.com/in/francisco-javier-benítez-del-pozo-56833a8a">
+            </picture></a>
+    </div>
+    <p>Javier Benítez | Web developer</p>
+</footer>
+<script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+<script src="{{ asset('node_modules/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+{#<script src="/web/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>#}
+{% block javascripts %}{% endblock %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDp2c_-CtRW2fWKFQF2Rg0ctiWYQgiiHQY&libraries=places"></script>
+</body>
+</html>

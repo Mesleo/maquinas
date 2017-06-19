@@ -1,0 +1,359 @@
+package com.javifocus2009gmail.ubication;
+
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListAdapter;
+import android.widget.SimpleAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * Created by jbenitez on 18/10/16.
+ */
+
+public class Login extends AppCompatActivity {
+
+    // URLs para acceder a los datos JSON de la base de datos
+    protected static final String URL_ROOT = "RAIZ_URL";
+    private static final String URL_LOGIN = URL_ROOT+"/login.php";
+    static final String URL_GET_USERS = URL_ROOT+"/getUsers.php";
+//    static final String URL_GET_USERS = URL_ROOT+"/get_users.php";
+    private static final int MY_REQUEST_CODE = 1;
+    static String Code = "NAME_USER";
+
+    private AlertDialog.Builder dialog;
+    private Bundle bundle;
+    private Intent intent;
+    private ImageButton btnChangePass;
+    private EditText etPass;
+    private Button btnLogin;
+    private Context context;
+
+    private String us = "";
+    private String name = "";
+    private String pass = "";
+    private int codeOk = 0;
+
+    protected User user = null;
+    protected ArrayList<HashMap<String, String>> userList;
+    protected ListAdapter adapterList;
+    private Spinner spinner;
+    protected Spinner spinnerUser;
+
+    private boolean spin = false;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.login);
+
+        etPass = (EditText) findViewById(R.id.etPassword);
+        btnLogin = (Button) findViewById(R.id.btnSignIn);
+        btnChangePass = (ImageButton) findViewById(R.id.btnChangePass1);
+        spinner = (Spinner) findViewById(R.id.spinnerUsers);
+        spinnerUser = (Spinner) findViewById(R.id.spinnerUsers2);
+
+        dialog = new AlertDialog.Builder(Login.this);
+
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        // Compruebo si hay conexión a Internet
+        if (networkInfo != null && networkInfo.isConnected()) {
+            new LoginService().execute("1", URL_GET_USERS, "1");
+        }else{
+            Toast.makeText(Login.this, "Error de conexión, comprueba si tienes acceso" +
+                    " a Internet", Toast.LENGTH_LONG).show();
+        }
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                etPass.setText("");
+                us = adapterList.getItem(position).toString();
+                name = us.substring(us.indexOf("nombre="), us.lastIndexOf("}")).replace("nombre=", "");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        btnChangePass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent(Login.this, ChangePasswordActivity.class);
+//                startActivityForResult(intent, MY_REQUEST_CODE);
+                startActivity(intent);
+            }
+        });
+
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pass = etPass.getText().toString().trim();
+
+                ConnectivityManager connMgr = (ConnectivityManager)
+                        getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+                // Compruebo si hay conexión a Internet
+                if (networkInfo != null && networkInfo.isConnected()) {
+
+                    if (name.length() > 1 && pass.length() > 1) {
+                        new LoginService().execute("2", URL_LOGIN, name, pass);
+                    } else {
+                        dialog.setMessage("Debe introducir la contraseña");
+                        dialog.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        }).show();
+                    }
+                }else{
+                    Toast.makeText(Login.this, "Error de conexión, comprueba si tienes acceso" +
+                            " a Internet", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new LoginService().execute("1", URL_GET_USERS, "1");
+    }
+
+    /**
+     * Clase AsyncTask para realizar operaciones contra el servidor
+     */
+    protected class LoginService extends AsyncTask<String, Integer, Boolean> {
+
+        ProgressDialog pDialog = new ProgressDialog(Login.this);
+        String resultJSON = null;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(Login.this);
+            pDialog.setMessage("Comprobando datos...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            String string = params[1];
+            URL url = null;
+            String idUser = "";
+            String nameUser = "";
+            Boolean resp = false;
+            userList = new ArrayList<>();
+
+            if(params[0] == "1"){// - GET - Obtengo todos los usuarios
+
+                if(params[2] == "9"){
+                    spin = true;
+                }
+                HttpHandler sh = new HttpHandler();
+                // Para la versión administrador descomentar estas dos líneas y comentar la siguiente
+                String urlAdmin = URL_GET_USERS+"?user_role=jbenitez078";
+                String jsonStr = sh.makeServiceCall(urlAdmin);
+//                String jsonStr = sh.makeServiceCall(URL_GET_USERS);
+
+                if (jsonStr != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(jsonStr);
+
+                        // Getting JSON Array node
+                        JSONArray users = jsonObj.getJSONArray("usuarios");
+                        JSONObject c;
+                        HashMap<String, String> user;
+                        String id;
+                        String name;
+
+                        // looping through All Machines
+                        for (int i = 0; i < users.length(); i++) {
+
+                            c = users.getJSONObject(i);
+                            name = c.getString("nombre");
+
+                            // tmp hash map for single machine
+                            user = new HashMap<>();
+
+                            // adding each child node to HashMap key => value
+                            user.put("nombre", name);
+
+                            // adding machine to machine list
+                            userList.add(user);
+                            resp = true;
+                        }
+                    } catch (final JSONException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(),
+                                        "Error obteniendo los usuarios: " + e.getMessage(),
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        });
+                    }
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),
+                                    "No se puede conectar con el servidor. Comprueba tu conexión a Internet",
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                        }
+                    });
+                }
+                return resp;
+            }else if (params[0] == "2") {// POST - Envío de nombre y password para comprobar si existe en la bbdd
+                try {
+                    url = new URL(string);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setDoInput(true);
+                    connection.setDoOutput(true);
+                    connection.setUseCaches(false);
+                    connection.setConnectTimeout(30000000);
+                    connection.setRequestProperty("Content-Type", "application/json");
+                    connection.setRequestProperty("Accept", "application/json");
+                    connection.connect();
+
+                    JSONObject jsonParam = new JSONObject();
+                    jsonParam.put("name", params[2]);
+                    jsonParam.put("password", params[3]);
+
+                    OutputStream os = connection.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                    writer.write(jsonParam.toString());
+                    writer.flush();
+                    writer.close();
+
+                    int response = connection.getResponseCode();
+                    StringBuilder result = new StringBuilder();
+
+                    if (response == HttpURLConnection.HTTP_OK) {
+                        String line;
+                        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        while ((line = br.readLine()) != null) {
+                            result.append(line);
+                        }
+
+                        JSONObject responseJSON = new JSONObject(result.toString());
+
+                        resultJSON = responseJSON.getString("estado");
+
+                        if (resultJSON == String.valueOf(codeOk)) {
+
+                            String us = responseJSON.getString("usuario");
+//                            System.out.println("-- Usuario -- "+us);
+
+                            // Para moviles pequeños
+//                            idUser = us.substring(us.indexOf("\"id\":"), us.indexOf(",\"2")).replace("\"id\":", "");
+//                            nameUser = us.substring(us.indexOf("\"nombre\":"), us.indexOf(",\"id")).replace("\"nombre\":", "");
+
+                            // Para móviles potentes
+                            idUser = us.substring(us.indexOf("\"id\":"), us.indexOf(",")).replace("\"id\":", "");
+                            nameUser = us.substring(us.indexOf("\"nombre\":"), us.lastIndexOf(",")).replace("\"nombre\":", "");
+
+                            idUser = idUser.replace("\"", "");
+
+                            user = new User(idUser, nameUser);
+                            resp = true;
+                        } else {
+                            resp = false;
+                        }
+                    }
+                    return resp;
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean s) {
+            super.onPostExecute(s);
+            // Dismiss the progress dialog
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+
+            if(s) {
+                adapterList = new SimpleAdapter(
+                        Login.this, userList,
+                        R.layout.list_item, new String[]{"nombre"},
+                        new int[]{R.id.nameMachine});
+                if (spin) {
+                    spinnerUser.setAdapter((SpinnerAdapter) adapterList);
+                } else {
+                    spinner.setAdapter((SpinnerAdapter) adapterList);
+                }
+            }
+
+            if(resultJSON != null){
+                switch (resultJSON){
+                    case "0":
+                        if(user != null) {
+                            intent = new Intent(Login.this, SecondActivity.class);
+                            intent.putExtra("id", user.getId());
+                            intent.putExtra("name", user.getName());
+                            startActivity(intent);
+                        }
+                        break;
+                    case "1":
+                        Toast.makeText(Login.this, "No existe un usuario con ese nombre", Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        Toast.makeText(Login.this, "Contraseña incorrecta", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+
+        }
+    }
+
+
+}

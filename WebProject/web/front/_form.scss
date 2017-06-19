@@ -1,0 +1,126 @@
+article{
+  width: 98%;
+  margin: auto;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  >header{
+    width: 100%;
+    background-color: $mainColorLight;
+    padding: 15px;
+    margin-bottom: 20px;
+    h2{
+      color: $mainColorText;
+    }
+  }
+  .form-login {
+    width: 80%;
+    margin: auto;
+    min-height: 340px;
+    #appbundle_usuario > div:nth-child(1), #appbundle_usuario > div:nth-child(2){
+      padding: 12px;
+      display: flex;
+      flex-direction: row;
+      label{
+        width: 35%;
+        margin-right: 4%;
+      }
+      input{
+        @extend .form-control;
+        width: 60%;
+      }
+    }
+    #appbundle_usuario > div:nth-child(3), #appbundle_usuario > div:nth-child(4){
+      position: relative;
+      display: inline-block;
+      width: 60%;
+      button{
+        position: absolute;
+        @extend .btn;
+      }
+    }
+    #appbundle_usuario > div:nth-child(4){
+      button{
+        left: 32%;
+        width: 100%;
+        @extend .btn-danger;
+      }
+    }
+    #appbundle_usuario > div:nth-child(3){
+      button{
+        left: 32%;
+        width: 100%;
+        bottom: -100px;
+        @extend .btn-info;
+      }
+    }
+  }
+  .form-change-pass {
+    width: 80%;
+    margin: auto;
+    min-height: 405px;
+    #appbundle_usuario > div:nth-child(1), #appbundle_usuario > div:nth-child(2), #appbundle_usuario > div:nth-child(3), #appbundle_usuario > div:nth-child(4){
+      padding: 12px;
+      display: flex;
+      flex-direction: row;
+      label{
+        width: 35%;
+        margin-right: 4%;
+      }
+      input{
+        @extend .form-control;
+        width: 60%;
+      }
+    }
+    #appbundle_usuario > div:nth-child(5), #appbundle_usuario > div:nth-child(6){
+      position: relative;
+      display: inline-block;
+      width: 42%;
+      button{
+        position: absolute;
+        @extend .btn;
+      }
+    }
+    #appbundle_usuario > div:nth-child(6){
+      button{
+        left: 15%;
+        @extend .btn-danger; 
+      }
+    }
+    #appbundle_usuario > div:nth-child(5){
+      button{
+        right: 1%;
+        @extend .btn-info;
+      }
+    }
+  }
+}
+
+input[type=submit], button{
+  margin-bottom: 20px;
+}
+
+@media screen and (min-width: 700px){
+  article {
+    width: 80%;
+    .form-login {
+      min-height: 275px;
+      #appbundle_usuario > div:nth-child(3), #appbundle_usuario > div:nth-child(4) {
+        width: 42%;
+      }
+      #appbundle_usuario > div:nth-child(4) {
+        button {
+          width: 100px;
+          right: 2%;
+
+        }
+      }
+      #appbundle_usuario > div:nth-child(3) {
+        button {
+          width: auto;
+          left: 10%;
+          bottom: -33px;
+        }
+      }
+    }
+  }
+}

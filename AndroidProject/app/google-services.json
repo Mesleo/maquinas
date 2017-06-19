@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "699293238868",
+    "firebase_url": "https://maquinas-146710.firebaseio.com",
+    "project_id": "maquinas-146710",
+    "storage_bucket": "maquinas-146710.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:699293238868:android:98f7db22a73de283",
+        "android_client_info": {
+          "package_name": "com.javifocus2009gmail.ubication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "699293238868-n9q4asgm6jhc2p1ualo2c6n53i2mcbja.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.javifocus2009gmail.ubication",
+            "certificate_hash": "BC50F7341A13950BD0EFB190BBE4841867A9C53C"
+          }
+        },
+        {
+          "client_id": "699293238868-mhbiu90toqd6frussgg3s5o344iln6ma.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCQWsSv2a5eZAfHJ4Xq1bwIEpxl9ke5Hk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "699293238868-mhbiu90toqd6frussgg3s5o344iln6ma.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
