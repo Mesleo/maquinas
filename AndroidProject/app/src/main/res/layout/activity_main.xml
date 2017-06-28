@@ -37,7 +37,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
-                    android:layout_marginEnd="5dp"
                     android:layout_weight="4"
                     android:weightSum="1">
 
@@ -131,7 +130,7 @@
             android:layout_gravity="bottom">
 
             <Button
-                android:text="Limpiar"
+                android:text="Guardar en Nave"
                 android:id="@+id/buttonClean"
                 android:textSize="18dp"
                 android:fontFamily="sans-serif"

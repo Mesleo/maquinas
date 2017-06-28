@@ -103,19 +103,15 @@ class MachineController extends Controller
 
             if($request->request->has('btnPress') && is_numeric($request->request->get('mach'))){
                 $coordinates = [];
-                if($request->request->has('latitude') && $request->request->has('longitude')
-                    && $request->request->get('latitude') != "" && $request->request->get('longitude') != ""){
+                if($request->request->has('latitude') && $request->request->has('longitude')){
                     $coordinates['latitude'] = trim($request->request->get('latitude'));
                     $coordinates['longitude'] = trim($request->request->get('longitude'));
-                }else{
-                    $coordinates['latitude'] = null;
-                    $coordinates['longitude'] = null;
                 }
-
                 $this->insertNewUbicationMachine($request, $ubication, $session, $coordinates);
             }else{
                 $this->info = "Error, no existe esa máquina";
             }
+
 
             return $this->redirectToRoute("show_ubications", [
                 'info' => $this->info

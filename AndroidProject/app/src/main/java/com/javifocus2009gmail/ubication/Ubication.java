@@ -10,18 +10,44 @@ public class Ubication implements Serializable {
 
     private String id;
     private String ubication;
+    private int machine;
+    private String nameMachine;
     private String date;
-    private String nameUser;
+    private String user;
     private String lat;
     private String lng;
 
-    public Ubication(String id, String ubication, String date, String nameUser, String lati, String lngi) {
+    Ubication(){
+
+    }
+
+    public Ubication(String id, String ubication, String date, String user, String lati, String lngi) {
         this.id = id;
         this.ubication = ubication;
         this.date = date;
-        this.nameUser = nameUser;
+        this.user = user;
         this.lat = lati;
         this.lng = lngi;
+    }
+
+    public Ubication(String ubication, int machine, String date, String user, String lati, String lngi) {
+        this.ubication = ubication;
+        this.machine = machine;
+        this.date = date;
+        this.user = user;
+        this.lat = lati;
+        this.lng = lngi;
+    }
+
+    public Ubication(String id, String ubi, String dateFormat, String user, String latitude, String longitude, String machine, int idMachine) {
+        this.id = id;
+        this.ubication = ubi;
+        this.date = dateFormat;
+        this.user = user;
+        this.lat = latitude;
+        this.lng = longitude;
+        this.nameMachine = machine;
+        this.machine = idMachine;
     }
 
     public String getLat() {
@@ -65,12 +91,27 @@ public class Ubication implements Serializable {
         return id;
     }
 
-    public String getNameUser() {
-        return nameUser;
+    public String getUser() {
+        return user;
     }
 
-    public void setNameUser(String nameUser) {
-        this.nameUser = nameUser;
+    public void setUser(String user) {
+        this.user = user;
     }
 
+    public int getMachine() {
+        return machine;
+    }
+
+    public void setMachine(int machine) {
+        this.machine = machine;
+    }
+
+    public String getNameMachine() {
+        return nameMachine;
+    }
+
+    public void setNameMachine(String nameMachine) {
+        this.nameMachine = nameMachine;
+    }
 }

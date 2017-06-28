@@ -1,0 +1,39 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="5">
+
+    <fragment
+        android:id="@+id/mapCreate"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_weight="4"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <Button
+            android:text="Atrás"
+            android:layout_width="wrap_content"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnCancel"
+            android:background="@drawable/button_show_ubication"
+            android:layout_weight="1" />
+
+        <Button
+            android:text="Guardar"
+            android:layout_width="wrap_content"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnCreate"
+            android:background="@drawable/button_save_ubication"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+</LinearLayout>

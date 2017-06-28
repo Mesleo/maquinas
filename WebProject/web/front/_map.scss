@@ -3,9 +3,11 @@ button[name=mode] > span{
 }
 
 button[name=mode] > i.icon-walk{
-  background-image: url('../images/man_walk_black.png');
+  //background-image: url('../images/man_walk_black.png');
+  background-image: url('../web/images/man_walk_black.png');
 }
 button[name=mode].btn-info > i.icon-walk{
+  //background-image: url('../images/man_white.png');
   background-image: url('../images/man_white.png');
 }
 

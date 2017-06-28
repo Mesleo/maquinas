@@ -36,7 +36,8 @@ public class MyListAdapter extends BaseAdapter {
     private Activity activity;
     private ArrayList<Ubication> ubicaciones;
     private String permission;
-    private static final String URL_DELETE_UBICATION = "http://mismaquinas.esy.es/delete_ubication_2.php";
+//    private static final String URL_DELETE_UBICATION = "http://mismaquinas.esy.es/delete_ubication_2.php";
+    private static final String URL_DELETE_UBICATION = "http://mismaquinas.esy.es/delete_ubication.php";
     private AlertDialog.Builder dialog;
     private int i = 0;
 
@@ -77,7 +78,7 @@ public class MyListAdapter extends BaseAdapter {
         TextView tvDate = (TextView) view.findViewById(R.id.tvDate);
         tvDate.setText(ubication.getDate());
 
-        String nUser = ubication.getNameUser().toUpperCase();
+        String nUser = ubication.getUser().toUpperCase();
         TextView tvUser = (TextView) view.findViewById(R.id.tvUser);
         tvUser.setText(nUser);
 
@@ -110,17 +111,39 @@ public class MyListAdapter extends BaseAdapter {
 
         // Implementación para mostrar ubicación geolocalizada
         if(this.permission.equals("permission")) {
-            Button btnUbi = (Button) view.findViewById(R.id.btnUbication);
-            btnUbi.setVisibility(view.getVisibility());
-            btnUbi.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View arg0) {
-                    Intent intent = new Intent(activity, MapsActivity.class);
-                    intent.putExtra("UBICATION", ubication);
-                    activity.startActivity(intent);
-                    Toast.makeText(activity, "Ubicación pulsada", Toast.LENGTH_SHORT).show();
-                }
-            });
+            Button bt = (Button) view.findViewById(R.id.btnUbication);
+            //Terminar de implementar, para que aparezca botón dinámicamente si tiene latitud y longitud
+//            ViewGroup linearLayout = (ViewGroup) activity.findViewById(R.id.activity_main);
+//            Button bt = new Button(activity);
+//            bt.setText("Ubicación");
+//            bt.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+//                    ViewGroup.LayoutParams.WRAP_CONTENT));
+//            linearLayout.addView(bt);
+
+            if (ubication.getLat() != null && ubication.getLng() != null
+                    && ubication.getLat() != "" && ubication.getLng() != "") {
+                bt.setVisibility(view.VISIBLE);
+                bt.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View arg0) {
+                        System.out.println("Machine  : -- "+ubication.getNameMachine());
+                        Intent intent = new Intent(activity, ShowUbicationMapActivity.class);
+                        intent.putExtra("NAME_MACHINE", ubication.getNameMachine());
+                        intent.putExtra("MACHINE", ubication.getMachine());
+                        intent.putExtra("USER", ubication.getUser());
+                        intent.putExtra("LATITUD", ubication.getLat());
+                        intent.putExtra("LONGITUD", ubication.getLng());
+                        activity.startActivityForResult(intent, 2);
+
+//                    Intent intent = new Intent(activity, ShowUbicationMapActivity.class);
+//                    intent.putExtra("UBICATION", ubication);
+//                    activity.startActivityForResult(intent, 1);
+                    }
+                });
+            }else{
+                bt.setVisibility(view.GONE);
+                bt.setVisibility(view.INVISIBLE);
+            }
         }
 
         if(position == 0){

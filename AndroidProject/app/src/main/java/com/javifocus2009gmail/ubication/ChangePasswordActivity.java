@@ -33,7 +33,8 @@ import java.net.URL;
 public class ChangePasswordActivity extends Login  implements View.OnClickListener{
 
     // URLs para acceder a los datos JSON de la base de datos
-    private static final String URL_CHANGE_PASSWORD = URL_ROOT+"/changePass.php";
+//    private static final String URL_CHANGE_PASSWORD = URL_ROOT+"/change_password.php";
+    private static final String URL_CHANGE_PASSWORD = URL_ROOT+"/change_password_2.php";
     public static String NAME = "NAME";
 
     private AlertDialog.Builder dialog;

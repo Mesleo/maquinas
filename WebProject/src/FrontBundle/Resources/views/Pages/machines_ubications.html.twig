@@ -399,10 +399,10 @@
                 latitude = null;
                 longitude = null;
                 marker = null;
-                $('input#latitude').val("");
-                $('input#latitude').value = "";
-                $('input#longitude').val("");
-                $('input#longitude').value = "";
+                $('input#latitude').val(null);
+                $('input#latitude').value = null;
+                $('input#longitude').val(null);
+                $('input#longitude').value = null;
                 var q = "¿Quieres cambiar la ubicación a esta máquina?";
                 changeUbicationMachine($('button#btn-save'), e, q);
             });
@@ -411,8 +411,6 @@
             $('#save-ubication').on('click', function(e){
                 var q = "¿Quieres cambiar la ubicación a esta máquina?";
                 e.preventDefault();
-                console.log(latitude);
-                console.log(longitude);
                 if(marker != null) {
                     latitude = marker.getPosition().lat();
                     longitude = marker.getPosition().lng();

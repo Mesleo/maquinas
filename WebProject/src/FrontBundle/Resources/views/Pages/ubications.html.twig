@@ -7,8 +7,8 @@
             {% for ub in ubications  %}
                 <div class="ubication">
                     <div class="line-1">
-                        <div class="location" {% if ub.latitud != null and  ub.longitud != null %}
-                            data-lat="{{ ub.latitud }}" data-lng="{{ ub.longitud }}"{% endif %} data-id="{{ ub.id }}">{{ ub.ubicacion }}</div>
+                        <div class="location {% if ub.latitud != null and  ub.longitud != null %}loc-pointer{% endif %}" {% if ub.latitud != null and  ub.longitud != null %}
+                            title="Pincha para ver la ubicación" data-lat="{{ ub.latitud }}" data-lng="{{ ub.longitud }}"{% endif %} data-id="{{ ub.id }}">{{ ub.ubicacion }}</div>
                         {% if user.rol is defined and user.rol == 2 %}
                             <div>
                                 <form action="{{ path('ubication_del') }}" method="post">

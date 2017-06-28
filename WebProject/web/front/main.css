@@ -5341,10 +5341,12 @@ button[name=mode] > span {
   display: none; }
 
 button[name=mode] > i.icon-walk {
-  background-image: url("../images/man_walk_black.png"); }
+  /*background-image: url("../images/man_walk_black.png");*/
+  background-image: url("../web/images/man_walk_black.png"); }
 
 button[name=mode].btn-info > i.icon-walk, article .form-login #appbundle_usuario > div:nth-child(3) button[name=mode] > i.icon-walk, article .form-change-pass #appbundle_usuario > div:nth-child(5) button[name=mode] > i.icon-walk {
-  background-image: url("../images/man_white.png"); }
+  /*background-image: url("../images/man_white.png");*/
+  background-image: url("../web/images/man_white.png"); }
 
 .img-walk:not(.img-walk-white) {
   width: 13.5px; }
@@ -5511,6 +5513,8 @@ section {
             width: 70%;
             margin-right: 2%;
             font-size: 1.5em; }
+          section article .content #ubications .ubication .line-1 .loc-pointer {
+            cursor: pointer; }
           section article .content #ubications .ubication .line-1 div:nth-child(2) {
             display: inline-block;
             width: 22%;

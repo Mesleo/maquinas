@@ -54,7 +54,7 @@ import java.util.HashMap;
 /**
  * Actividad principal que mostrará en un spinner las máquinas que hay operativas
  */
-public class SecondActivity extends AppCompatActivity implements View.OnClickListener {
+public class SecondActivityNew extends AppCompatActivity implements View.OnClickListener {
 
     private static final String SENDER_ID = "maquinas-146710";
     // ArrayList necesarios para meter las máquinas y las ubicaciones de cada máquina
@@ -69,22 +69,19 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
     private Spinner spinner;
     private ListView listView;
     private Button btnGuardar;
-    private Button btnSaveNave;
+    private Button btnClean;
     private Button btnDel = null;
     private EditText etUbication;
     private AlertDialog.Builder dialog;
     private ProgressDialog pDialog;
 
     // URLs para conectar y mostrar resultados
-    private static final String URL_ROOT = "http://mismaquinas.esy.es";
-//    private static final String URL_ROOT = "http://192.168.100.2";
+//    private static final String URL_ROOT = "http://mismaquinas.esy.es";
+    private static final String URL_ROOT = "http://192.168.100.2";
     private static final String URL_GET_MACHINES = URL_ROOT + "/get_machines_2.php";
-//    private static final String URL_GET_MACHINES = URL_ROOT + "/get_machines.php";
     private static final String URL_SET_UBICATION = URL_ROOT + "/set_ubication_machine_2.php";
-//    private static final String URL_SET_UBICATION = URL_ROOT + "/set_ubication_machine.php";
     private static final String URL_GET_UBICATIONS_MACHINE = URL_ROOT + "/get_ubications_machine_2.php";
-//    private static final String URL_GET_UBICATIONS_MACHINE = URL_ROOT + "/get_ubications_machine.php";
-    private static final String URL_NOTIFICATION = URL_ROOT + "/send_notifications_2.php";// Previsto añadir sistema de notificaciones
+    private static final String URL_NOTIFICATION = URL_ROOT + "/send_notifications_2.php";
 
     // Variables necesarias para modificar estados
     private int pos = -1;
@@ -117,7 +114,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         machineList = new ArrayList<>();
         spinner = (Spinner) findViewById(R.id.spinner);
         btnGuardar = (Button) findViewById(R.id.btnSave);
-        btnSaveNave = (Button) findViewById(R.id.buttonClean);
+        btnClean = (Button) findViewById(R.id.buttonClean);
         etUbication = (EditText) findViewById(R.id.inputUbication);
 
         bundle = getIntent().getExtras();
@@ -142,10 +139,10 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
                         " a Internet", Toast.LENGTH_LONG).show();
             }
 
-            btnSaveNave.setOnClickListener(new View.OnClickListener() {
+            btnClean.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showAlertDialog("¿Seguro que quiere guardar en la Nave la máquina " + nameMachine + " ?", true, 3);
+                    etUbication.setText("");
                 }
             });
 
@@ -189,17 +186,24 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
 
         switch (v.getId()) {
             case R.id.btnSave:
+                dialog = new AlertDialog.Builder(SecondActivityNew.this);
                 ubicationMachine = etUbication.getText().toString().trim();
                 if (ubicationMachine.length() < 3) {
                     showAlertDialog("Debe escribir al menos 3 caracteres.", false, 3);
                 } else {
-//                    showAlertDialog("¿Quieres añadir geolocalización a la máquina " + nameMachine + " ?", true, 1);
-                    showAlertDialog("¿Seguro que quiere añadir esta ubicación a la máquina " + nameMachine + " ?", true, 2);
+                    showAlertDialog("¿Quieres añadir geolocalización a la máquina " + nameMachine + " ?", true, 1);
                 }
                 break;
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        finish();
     }
 
     /**
@@ -229,33 +233,31 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void showAlertDialog(final String message, final boolean b, final int quest) {
-        dialog = new AlertDialog.Builder(SecondActivity.this);
         dialog.setMessage(message)
                 .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         if (b) {
                             if(quest == 2) {
-                                showAlertDialog("¿Quieres añadir geolocalización a la máquina " + nameMachine + " ?", true, 1);
-                                hideKeyboard();
+                                threadConec = new GetWebService();
+                                threadConec.execute(URL_SET_UBICATION, "2", etUbication.getText().toString().trim(), idMachine, user.getId());
+                                etUbication.setText("");
+                                showNotification();
+                                getUbicationMachine();
                             }else if(quest == 1){
-                                Intent intent = new Intent(SecondActivity.this, CreateUbicationMapActivity.class);
+                                Intent intent = new Intent(SecondActivityNew.this, CreateUbicationMapActivity.class);
                                 intent.putExtra("UBICATION", etUbication.getText().toString().trim());
                                 intent.putExtra("MACHINE", Integer.parseInt(idMachine));
                                 intent.putExtra("USER", user.getId());
                                 startActivityForResult(intent, 1);
-                            }else{
-                                threadConec = new SecondActivity.GetWebService();
-                                threadConec.execute(URL_SET_UBICATION, "2", "Nave", idMachine, user.getId());
-                                etUbication.setText("");
-                                showNotification();
-                                getUbicationMachine();
+//                                SecondActivity.this.startActivity(intent);
                             }
                         }
+                        hideKeyboard();
                     }
                 });
         if (b) {
             String bt;
-            if(quest == 2 || quest == 3){
+            if(quest == 2){
                 bt = "Cancelar";
             }else{
                 bt = "No quiero";
@@ -263,13 +265,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
             dialog.setNegativeButton(bt, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     if(quest == 1){
-                        threadConec = new SecondActivity.GetWebService();
-                        threadConec.execute(URL_SET_UBICATION, "2", etUbication.getText().toString().trim(), idMachine, user.getId());
-                        etUbication.setText("");
-                        showNotification();
-                        getUbicationMachine();
-                    }else if(quest == 3){
-                        return;
+                        showAlertDialog("¿Seguro que quiere añadir esta ubicación a la máquina " + nameMachine + " ?", true, 2);
                     }
                 }
             });
@@ -277,15 +273,12 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         dialog.show();
     }
 
+    /**
+     * Para el sistema de notificaciones
+     * Pendiente de desarrollar
+     */
     private void showNotification() {
 
-    }
-
-    /**
-     * Obtengo todas las máquinas disponibles
-     */
-    private void getMachines() {
-        new getMachines().execute();
     }
 
     @Override
@@ -297,15 +290,22 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     /**
+     * Obtengo todas las máquinas disponibles
+     */
+    private void getMachines() {
+        new getMachines().execute();
+    }
+
+    /**
      * Clase AsyncTask para realizar operaciones contra el servidor
      */
     class GetWebService extends AsyncTask<String, Integer, String> {
-        ProgressDialog pDialog = new ProgressDialog(SecondActivity.this);
+        ProgressDialog pDialog = new ProgressDialog(SecondActivityNew.this);
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(SecondActivity.this);
+            pDialog = new ProgressDialog(SecondActivityNew.this);
             pDialog.setMessage("Espere por favor...");
             pDialog.setCancelable(false);
             pDialog.show();
@@ -360,20 +360,14 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
                                 ubi = ubicationsJSON.getJSONObject(i).getString("ubicacion");
                                 dat = ubicationsJSON.getJSONObject(i).getString("fecha");
                                 user = ubicationsJSON.getJSONObject(i).getString("usuario");
-                                if(ubicationsJSON.getJSONObject(i).getString("latitud") == "null"
-                                        || ubicationsJSON.getJSONObject(i).getString("latitud") == ""){
-                                    latitude = null;
-                                    longitude = null;
-                                }else{
-                                    latitude = ubicationsJSON.getJSONObject(i).getString("latitud");
-                                    longitude = ubicationsJSON.getJSONObject(i).getString("longitud");
-                                }
+                                latitude = ubicationsJSON.getJSONObject(i).getString("latitud");
+                                longitude = ubicationsJSON.getJSONObject(i).getString("longitud");
                                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 Date date = simpleDateFormat.parse(dat);
                                 simpleDateFormat = new SimpleDateFormat("EEEEEE, d MMM yyyy HH:mm:ss");
                                 String dateFormat = simpleDateFormat.format(date);
                                 if(user == "null") user = "";
-                                ubication = new Ubication(id, ubi, dateFormat, user, latitude, longitude, nameMachine, Integer.parseInt(idMachine));
+                                ubication = new Ubication(id, ubi, dateFormat, user, latitude, longitude);
                                 ubicationsList.add(ubication);
                             }
                         }
@@ -388,6 +382,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
                     e.printStackTrace();
                 }
             } else if (params[1] == "2") { // POST - Insercción de una nueva ubicación para un máquina
+                // Sin latitud ni longitud (se hace en otra clase
                 try {
 
                     url = new URL(string);
@@ -403,8 +398,6 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
                     jsonParam.put("ubication", params[2]);
                     jsonParam.put("idMachine", params[3]);
                     jsonParam.put("idUser", params[4]);
-
-                    System.out.println("-- JsonParam(GetWebService) -- : "+String.valueOf(jsonParam));
 
                     OutputStream os = connection.getOutputStream();
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
@@ -426,12 +419,11 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
 
                         String resultJSON = responseJSON.getString("estado");
 
-                        if (resultJSON == "1") {
+                        if (resultJSON == "1" || resultJSON == "Inserccion correcta") {
                             resp = "Ubicación añadida correctamente";
                         } else {
                             resp = "No se ha podido añadir la ubicación";
                         }
-
                     }
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -460,7 +452,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
             }
 
             // Creo el adaptador para mostrar las ubicaciones
-            adapterUbications = new MyListAdapter(SecondActivity.this, ubicationsList, c);
+            adapterUbications = new MyListAdapter(SecondActivityNew.this, ubicationsList, c);
             listView.setAdapter(adapterUbications);
         }
     }
@@ -475,7 +467,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         protected void onPreExecute() {
             super.onPreExecute();
             // Showing progress dialog
-            pDialog = new ProgressDialog(SecondActivity.this);
+            pDialog = new ProgressDialog(SecondActivityNew.this);
             pDialog.setMessage("Espera por favor...");
             pDialog.setCancelable(false);
             pDialog.show();
@@ -490,6 +482,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
 
             if (jsonStr != null) {
                 try {
+                    System.out.println("JSONSTR: -- "+jsonStr);
                     JSONObject jsonObj = new JSONObject(jsonStr);
 
                     // Getting JSON Array node
@@ -560,8 +553,8 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
              * Meto en el adaptador todas las máquinas de la consulta
              * */
             adapterMachines = new SimpleAdapter(
-                    SecondActivity.this, machineList,
-                    R.layout.list_item, new String[]{"maquina"},
+                    SecondActivityNew.this, machineList,
+                    R.layout.list_item, new String[]{"maquina", "matricula"},
                     new int[]{R.id.nameMachine});
             spinner.setAdapter((SpinnerAdapter) adapterMachines);
         }

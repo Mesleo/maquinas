@@ -222,16 +222,16 @@
       <workItem from="1497567295538" duration="860000" />
       <workItem from="1497661000969" duration="1701000" />
       <workItem from="1497695912166" duration="897000" />
-      <workItem from="1497875650055" duration="152000" />
+      <workItem from="1497875650055" duration="729000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="73031000" />
+    <option name="totallyTimeSpent" value="73608000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="30" width="1368" height="739" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24963397" sideWeight="0.48139533" order="0" side_tool="false" content_ui="combo" />

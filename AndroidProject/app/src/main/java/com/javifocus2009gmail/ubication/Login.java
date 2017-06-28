@@ -44,9 +44,11 @@ import java.util.HashMap;
 public class Login extends AppCompatActivity {
 
     // URLs para acceder a los datos JSON de la base de datos
-    protected static final String URL_ROOT = "RAIZ_URL";
-    private static final String URL_LOGIN = URL_ROOT+"/login.php";
-    static final String URL_GET_USERS = URL_ROOT+"/getUsers.php";
+    protected static final String URL_ROOT = "http://mismaquinas.esy.es";
+//    protected static final String URL_ROOT = "http://192.168.100.2";
+    private static final String URL_LOGIN = URL_ROOT+"/login_2.php";
+//    private static final String URL_LOGIN = URL_ROOT+"/login.php";
+    static final String URL_GET_USERS = URL_ROOT+"/get_users_2.php";
 //    static final String URL_GET_USERS = URL_ROOT+"/get_users.php";
     private static final int MY_REQUEST_CODE = 1;
     static String Code = "NAME_USER";
@@ -284,7 +286,6 @@ public class Login extends AppCompatActivity {
                         if (resultJSON == String.valueOf(codeOk)) {
 
                             String us = responseJSON.getString("usuario");
-//                            System.out.println("-- Usuario -- "+us);
 
                             // Para moviles pequeños
 //                            idUser = us.substring(us.indexOf("\"id\":"), us.indexOf(",\"2")).replace("\"id\":", "");
@@ -293,7 +294,6 @@ public class Login extends AppCompatActivity {
                             // Para móviles potentes
                             idUser = us.substring(us.indexOf("\"id\":"), us.indexOf(",")).replace("\"id\":", "");
                             nameUser = us.substring(us.indexOf("\"nombre\":"), us.lastIndexOf(",")).replace("\"nombre\":", "");
-
                             idUser = idUser.replace("\"", "");
 
                             user = new User(idUser, nameUser);
