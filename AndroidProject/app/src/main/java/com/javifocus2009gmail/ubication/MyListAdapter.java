@@ -110,9 +110,8 @@ public class MyListAdapter extends BaseAdapter {
 //        }
 
         // Implementación para mostrar ubicación geolocalizada
-        if(this.permission.equals("permission")) {
-            Button bt = (Button) view.findViewById(R.id.btnUbication);
-            //Terminar de implementar, para que aparezca botón dinámicamente si tiene latitud y longitud
+        Button bt = (Button) view.findViewById(R.id.btnUbication);
+        //Terminar de implementar, para que aparezca botón dinámicamente si tiene latitud y longitud
 //            ViewGroup linearLayout = (ViewGroup) activity.findViewById(R.id.activity_main);
 //            Button bt = new Button(activity);
 //            bt.setText("Ubicación");
@@ -120,30 +119,26 @@ public class MyListAdapter extends BaseAdapter {
 //                    ViewGroup.LayoutParams.WRAP_CONTENT));
 //            linearLayout.addView(bt);
 
-            if (ubication.getLat() != null && ubication.getLng() != null
-                    && ubication.getLat() != "" && ubication.getLng() != "") {
-                bt.setVisibility(view.VISIBLE);
-                bt.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View arg0) {
-                        System.out.println("Machine  : -- "+ubication.getNameMachine());
-                        Intent intent = new Intent(activity, ShowUbicationMapActivity.class);
-                        intent.putExtra("NAME_MACHINE", ubication.getNameMachine());
-                        intent.putExtra("MACHINE", ubication.getMachine());
-                        intent.putExtra("USER", ubication.getUser());
-                        intent.putExtra("LATITUD", ubication.getLat());
-                        intent.putExtra("LONGITUD", ubication.getLng());
-                        activity.startActivityForResult(intent, 2);
-
-//                    Intent intent = new Intent(activity, ShowUbicationMapActivity.class);
-//                    intent.putExtra("UBICATION", ubication);
-//                    activity.startActivityForResult(intent, 1);
-                    }
-                });
-            }else{
-                bt.setVisibility(view.GONE);
-                bt.setVisibility(view.INVISIBLE);
-            }
+        if (ubication.getLat() != null && ubication.getLng() != null
+                && ubication.getLat() != "" && ubication.getLng() != "") {
+            bt.setVisibility(view.VISIBLE);
+            bt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    System.out.println("Machine  : -- "+ubication.getNameMachine());
+                    Intent intent = new Intent(activity, ShowUbicationMapActivity.class);
+                    intent.putExtra("NAME_MACHINE", ubication.getNameMachine());
+                    intent.putExtra("MACHINE", ubication.getMachine());
+                    intent.putExtra("USER", ubication.getUser());
+                    intent.putExtra("LATITUD", ubication.getLat());
+                    intent.putExtra("LONGITUD", ubication.getLng());
+                    activity.startActivityForResult(intent, 2);
+                    activity.overridePendingTransition(R.anim.fade_in_2, R.anim.fade_out_2);
+                }
+            });
+        }else{
+            bt.setVisibility(view.GONE);
+            bt.setVisibility(view.INVISIBLE);
         }
 
         if(position == 0){

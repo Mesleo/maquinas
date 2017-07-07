@@ -12,7 +12,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $body = json_decode(file_get_contents("php://input"), true);
 
     $ubicacion = $body['ubication'];
-    $ubicacion = $_POST['ubication'];
 
     $query = "UPDATE maquina_ubicacion SET trash = true WHERE id_ubicacion = ?";
 

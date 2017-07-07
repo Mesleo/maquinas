@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/back_login"
     android:padding="10dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:paddingBottom="30dp"
-        android:elevation="5dp"
-        android:background="@drawable/background_login">
+        android:elevation="3dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -18,23 +18,23 @@
             android:background="@color/colorPrimary"
             android:layout_marginBottom="30dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="ACCESO"
-                android:padding="7dp"
-                android:fontFamily="serif-monospace"
-                android:gravity="center_horizontal"
-                android:textSize="40dp"
-                android:textColor="#fffffa"
-                android:textStyle="bold"/>
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="ACCESO"-->
+                <!--android:padding="7dp"-->
+                <!--android:fontFamily="serif-monospace"-->
+                <!--android:gravity="center_horizontal"-->
+                <!--android:textSize="40dp"-->
+                <!--android:textColor="#fffffa"-->
+                <!--android:textStyle="bold"/>-->
 
         </LinearLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp">
+            android:layout_marginTop="80dp">
 
             <Spinner
                 android:id="@+id/spinnerUsers"
@@ -75,22 +75,22 @@
                 <ImageButton
                     android:id="@+id/btnChangePass1"
                     android:text="Cambiar contraseña"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:layout_gravity="center_vertical"
-                    android:layout_height="50dp"
-                    android:layout_marginRight="50dp"
+                    android:layout_height="60dp"
+                    android:layout_marginRight="55dp"
                     android:textColor="#fffffa"
-                    android:background="@drawable/change_pass" />
+                    android:background="@drawable/button_chang_pass" />
 
                 <Button
                     android:id="@+id/btnSignIn"
                     android:text="Entrar"
                     android:layout_width="140dp"
-                    android:layout_height="70dp"
                     android:textSize="20dp"
                     android:textColor="#fffffa"
                     android:background="@drawable/button_save_ubication"
-                    />
+                    android:layout_height="50dp"
+                    android:layout_marginTop="6dp" />
 
             </LinearLayout>
 

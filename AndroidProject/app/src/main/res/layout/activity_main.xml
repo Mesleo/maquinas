@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    android:background="@color/greyLight"
+    android:background="@drawable/back_carretera"
     tools:context="com.javifocus2009gmail.ubication.SecondActivity">
 
     <LinearLayout
@@ -67,8 +67,10 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Aquí la ubicación"
+                android:hint="Ubicación..."
+                android:textColorHint="@color/white2"
                 android:id="@+id/inputUbication"
+                android:textColor="@color/white"
                 android:inputType="textCapSentences|textMultiLine"
                 android:maxLength="1000"
                 android:maxLines="3" />/>

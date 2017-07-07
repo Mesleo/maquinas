@@ -9,7 +9,8 @@ $query = "SELECT
             FROM 
                 usuario AS u
             WHERE
-                u.rol = 1
+                u.rol = 1 
+                AND u.trash = 0 
             ORDER BY u.nombre ASC";
 
 // Lo del rol es para crear usuarios administradores y tener otros privilegios en la aplicación

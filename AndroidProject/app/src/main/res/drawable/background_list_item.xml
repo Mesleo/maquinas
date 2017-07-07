@@ -3,14 +3,14 @@
     <!-- Border -->
     <item>
         <shape>
-            <solid android:color="@color/colorSecundaryDark"></solid>
+            <solid android:color="@color/greyDark"></solid>
         </shape>
     </item>
     <!-- Body -->
     <item
         android:bottom="2dp" >
         <shape>
-            <solid android:color="@color/colorSecundaryLight"></solid>
+            <solid android:color="@color/colorSecundaryTransparent"></solid>
         </shape>
     </item>
 </layer-list>

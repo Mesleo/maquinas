@@ -2,6 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/white2"
     android:weightSum="5">
 
     <fragment
@@ -15,7 +16,9 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:layout_marginTop="7dp"
+        android:layout_marginBottom="7dp">
 
         <Button
             android:text="Atrás"
@@ -24,7 +27,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/btnCancel"
             android:background="@drawable/button_show_ubication"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp" />
 
         <Button
             android:text="Guardar"
@@ -33,7 +38,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/btnCreate"
             android:background="@drawable/button_save_ubication"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp" />
     </LinearLayout>
 
 </LinearLayout>

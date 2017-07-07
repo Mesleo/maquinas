@@ -3,18 +3,29 @@ package com.javifocus2009gmail.ubication;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -33,32 +44,54 @@ import java.net.URL;
 
 public class CreateUbicationMapActivity extends AppCompatActivity
         implements GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnCameraIdleListener,
-        OnMapReadyCallback {
+        OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
+
+    private static final String TAG = CreateUbicationMapActivity.class.getSimpleName();
 
     private GetWebService threadConec;
     private static final String URL_ROOT = "http://mismaquinas.esy.es";
 //    private static final String URL_ROOT = "http://192.168.100.2";
     private static final String URL_SET_UBICATION = URL_ROOT + "/set_ubication_machine_2.php";
 //    private static final String URL_SET_UBICATION = URL_ROOT + "/set_ubication_machine.php";
-    private AlertDialog.Builder dialog;
 
     private GoogleMap mMap;
-    double lat, lon;
-    private TextView mTapTextView;
+    private CameraPosition mCameraPosition;
+    private GoogleApiClient mGoogleApiClient;
+
+    // The geographical location where the device is currently located. That is, the last-known
+    // location retrieved by the Fused Location Provider.
+    private Location mLastKnownLocation;
+
+    // Keys for storing activity state.
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+    private static final String KEY_LOCATION = "location";
+
     private Button btnSave;
     private Button btnCancel;
+    private AlertDialog.Builder dialog;
 
     private static final LatLng GRUAS_SEBASTIAN = new LatLng(38.36000676549384, -4.8410747945308685);
     private static LatLng yourUbication;
     private double latitude = 38.36000676549384;
     private double longitude = -4.8410747945308685;
+    private static final int DEFAULT_ZOOM = 16;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private boolean mLocationPermissionGranted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_create_ubication);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.mapCreate);
+        // Build the Play services client for use by the Fused Location Provider and the Places API.
+        // Use the addApi() method to request the Google Places API and the Fused Location Provider.
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addConnectionCallbacks(this)
+                .addApi(LocationServices.API)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .build();
         btnSave = (Button) findViewById(R.id.btnCreate);
         btnCancel = (Button) findViewById(R.id.btnCancel);
 
@@ -78,7 +111,7 @@ public class CreateUbicationMapActivity extends AppCompatActivity
                 finish();
             }
         });
-        mapFragment.getMapAsync(this);
+        mGoogleApiClient.connect();
     }
 
     /**
@@ -93,26 +126,99 @@ public class CreateUbicationMapActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        // Líneas necesarias para obtener la localización del usuario
-//        GPSTracker gps = new GPSTracker(this);
-//        if(gps.getLatitude() != 0.0 && gps.getLongitude() != 0.0){
-//            latitude = gps.getLatitude();
-//            longitude = gps.getLongitude();
-//        }
-
-        yourUbication = new LatLng(latitude, longitude);
         mMap = googleMap;
         mMap.setMaxZoomPreference(18.0f);
-        mMap.setMinZoomPreference(10.0f);
-        setMarkMap(yourUbication);
+        mMap.setMinZoomPreference(6.0f);
         mMap.setOnMapClickListener(this);
         mMap.setOnMapLongClickListener(this);
         mMap.setOnCameraIdleListener(this);
+        // Turn on the My Location layer and the related control on the map.
+        updateLocationUI();
+
+        // Get the current location of the device and set the position of the map.
+        getDeviceLocation();
+        setMarkMap(yourUbication);
+    }
+
+    /**
+     * Updates the map's UI settings based on whether the user has granted location permission.
+     */
+    private void updateLocationUI() {
+        if (mMap == null) {
+            return;
+        }
+
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+
+        if (mLocationPermissionGranted) {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        } else {
+            mMap.setMyLocationEnabled(false);
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            mLastKnownLocation = null;
+        }
+    }
+
+    /**
+     * Gets the current location of the device, and positions the map's camera.
+     */
+    private void getDeviceLocation() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+        /*
+         * Get the best and most recent location of the device, which may be null in rare
+         * cases when a location is not available.
+         */
+        if (mLocationPermissionGranted) {
+            mLastKnownLocation = LocationServices.FusedLocationApi
+                    .getLastLocation(mGoogleApiClient);
+        }
+
+        // Set the map's camera position to the current location of the device.
+        if (mCameraPosition != null) {
+            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+        } else if (mLastKnownLocation != null) {
+            yourUbication = new LatLng(mLastKnownLocation.getLatitude(),
+                    mLastKnownLocation.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(mLastKnownLocation.getLatitude(),
+                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+        } else {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(yourUbication, DEFAULT_ZOOM));
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        }
     }
 
     private void setMarkMap(LatLng position) {
         latitude = position.latitude;
         longitude = position.longitude;
+        yourUbication = new LatLng(latitude, longitude);
         mMap.addMarker(new MarkerOptions().position(position)
                 .title("Estás aquí"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(yourUbication));
@@ -168,6 +274,27 @@ public class CreateUbicationMapActivity extends AppCompatActivity
                     }
                 });
         dialog.show();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        // Build the map.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapCreate);
+        mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d(TAG, "Play services connection suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        // Refer to the reference doc for ConnectionResult to see what error codes might
+        // be returned in onConnectionFailed.
+        Log.d(TAG, "Play services connection failed: ConnectionResult.getErrorCode() = "
+                + connectionResult.getErrorCode());
     }
 
     class GetWebService extends AsyncTask<String, Integer, String> {

@@ -33,8 +33,8 @@ import java.net.URL;
 public class ChangePasswordActivity extends Login  implements View.OnClickListener{
 
     // URLs para acceder a los datos JSON de la base de datos
-//    private static final String URL_CHANGE_PASSWORD = URL_ROOT+"/change_password.php";
-    private static final String URL_CHANGE_PASSWORD = URL_ROOT+"/change_password_2.php";
+    private static final String URL_CHANGE_PASSWORD = URL_ROOT+"/change_password.php";
+//    private static final String URL_CHANGE_PASSWORD = URL_ROOT+"/change_password_2.php";
     public static String NAME = "NAME";
 
     private AlertDialog.Builder dialog;
@@ -189,13 +189,13 @@ public class ChangePasswordActivity extends Login  implements View.OnClickListen
                             result.append(line);
                         }
                         JSONObject responseJSON = new JSONObject(result.toString());
-
                         resultJSON = responseJSON.getString("estado");
 
                         if (resultJSON == String.valueOf(codeOk)) {
-
-                            String us = responseJSON.getString("usuario");
-                            nameUser = us.substring(us.indexOf("\"nombre\":"), us.lastIndexOf(",")).replace("\"nombre\":", "");
+//
+//                            String us = responseJSON.getString("usuario");
+//                            System.out.println("NAMEUSER: -- "+us);
+//                            nameUser = us.substring(us.indexOf("\"nombre\":"), us.lastIndexOf(",")).replace("\"nombre\":", "");
                             resp = true;
                         } else {
                             resp = false;
@@ -223,10 +223,11 @@ public class ChangePasswordActivity extends Login  implements View.OnClickListen
             if(resultJSON != null){
                 switch (resultJSON){
                     case "0":
-                        if(nameUser != null) {
-//                            resultIntent = new Intent();
-//                            resultIntent.putExtra(Login.Code, nameUser);
-//                            setResult(RESULT_OK, resultIntent);
+                        if(s) {
+                            pDialog.dismiss();
+                            Intent i = new Intent(ChangePasswordActivity.this, Login.class);
+                            i.putExtra("INFO", "Contraseña cambiada correctamente");
+                            setResult(RESULT_OK, i);
                             finish();
                         }
                         break;

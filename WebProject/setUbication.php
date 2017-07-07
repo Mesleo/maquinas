@@ -7,6 +7,8 @@ $db = ConnectDB::getInstance();
 $ubicacion = null;
 $machine = null;
 $user = null;
+$latitude = null;
+$longitude = null;
 $response = [];
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -16,22 +18,37 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $ubicacion = $body['ubication'];
     $machine = $body['idMachine'];
     $user = $body['idUser'];
+    $latitude = $body['latitud'];
+    $longitude = $body['longitud'];
 
-    $query = "INSERT INTO ubicacion (nombre) VALUES (?)";
+    $query = "SELECT id, nombre
+                FROM ubicacion
+                WHERE nombre =  ?
+                GROUP BY nombre";
 
-    $query2 = "INSERT INTO 
-                maquina_ubicacion 
+    $ubic = $db->queryOneParam($query, $ubicacion);
+
+    if($ubic != null){// Si ya hay una ubicación con el mismo nombre...
+        $idUbicacion = $ubic['id'];
+    }else{// Sino se crea una nueva...
+        $query2 = "INSERT INTO ubicacion (nombre) VALUES (?)";
+        $response['ubicacion'] = $db->queryOneParamArray($query2, $ubicacion);
+        $idUbicacion = $db->lastInsertId();
+    }
+
+    $query3 = "INSERT INTO
+                maquina_ubicacion
                     (
-                    id_maquina, 
-                    id_ubicacion, 
-                    id_usuario
-                ) 
-                VALUES (?, ?, ?)";
+                    id_maquina,
+                    id_ubicacion,
+                    id_usuario,
+                    latitud,
+                    longitud
+                )
+                VALUES (?, ?, ?, ?, ?)";
 
     if ($ubicacion != null && $machine != null) {
-        $response['ubicacion'] = $db->queryOneParamArray($query, $ubicacion);
-        $idUbicacion = $db->lastInsertId();
-        $response['maquina_ubicacion'] = $db->queryThreeParamsArray($query2, $machine, $idUbicacion, $user);
+        $response['maquina_ubicacion'] = $db->queryFiveParamsArray($query3, $machine, $idUbicacion, $user, $latitude, $longitude);
         $response['estado'] = "Inserccion correcta";
     }else{
         $response['estado'] = "Inserccion erronea";

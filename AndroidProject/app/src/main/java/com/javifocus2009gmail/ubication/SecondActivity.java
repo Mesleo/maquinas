@@ -125,6 +125,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         nameUser = bundle.getString("name");
         nameUser = capitalize(nameUser);
         user = new User(idUser, nameUser);
+
         if(user != null) {
             setActionBar();
             this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -178,10 +179,8 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void setActionBar(){
-        SpannableString s = new SpannableString(nameUser);
-        s.setSpan(new ForegroundColorSpan(Color.WHITE), 0, nameUser.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        String title = getSupportActionBar().getTitle().toString();
-        getSupportActionBar().setTitle(title+"  -  " + s);
+        String userName = new String(nameUser);
+        getSupportActionBar().setTitle("Bienvenido " + capitalize(userName));
     }
 
     @Override
@@ -193,7 +192,6 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
                 if (ubicationMachine.length() < 3) {
                     showAlertDialog("Debe escribir al menos 3 caracteres.", false, 3);
                 } else {
-//                    showAlertDialog("¿Quieres añadir geolocalización a la máquina " + nameMachine + " ?", true, 1);
                     showAlertDialog("¿Seguro que quiere añadir esta ubicación a la máquina " + nameMachine + " ?", true, 2);
                 }
                 break;
@@ -207,6 +205,9 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
      */
     private String capitalize(String s) {
         String firstChar = s.substring(0,1);
+        if(firstChar.equals("\"")){
+            firstChar = s.substring(1,2);
+        }
         s = s.replaceFirst(firstChar, firstChar.toUpperCase());
         return s;
     }
@@ -243,6 +244,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
                                 intent.putExtra("MACHINE", Integer.parseInt(idMachine));
                                 intent.putExtra("USER", user.getId());
                                 startActivityForResult(intent, 1);
+                                overridePendingTransition(R.anim.fade_in_2, R.anim.fade_out_2);
                             }else{
                                 threadConec = new SecondActivity.GetWebService();
                                 threadConec.execute(URL_SET_UBICATION, "2", "Nave", idMachine, user.getId());
@@ -487,9 +489,9 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
             HttpHandler sh = new HttpHandler();
             // Construyo la URL para la consulta
             String jsonStr = sh.makeServiceCall(URL_GET_MACHINES);
-
             if (jsonStr != null) {
                 try {
+                    System.out.println("SecondActivity: ---- "+jsonStr);
                     JSONObject jsonObj = new JSONObject(jsonStr);
 
                     // Getting JSON Array node
@@ -509,7 +511,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
                         id = c.getString("id");
                         name = c.getString("maquina");
 //                        ubication = c.getString("ubicacion");
-                        enrolment = c.getString("matricula");
+//                        enrolment = c.getString("matricula");
 
                         // tmp hash map for single machine
                         machine = new HashMap<>();
@@ -518,7 +520,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
                         machine.put("id", id);
                         machine.put("maquina", name);
 //                        machine.put("ubicacion", ubication);
-                        machine.put("matricula", enrolment);
+//                        machine.put("matricula", enrolment);
 //                        machine.put("matricula", enrolment);
 
                         // adding machine to machine list
@@ -529,7 +531,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void run() {
                             Toast.makeText(getApplicationContext(),
-                                    "Error obteniendo los datos: " + e.getMessage(),
+                                    "Error obteniendo las máquinas",
                                     Toast.LENGTH_LONG)
                                     .show();
                         }

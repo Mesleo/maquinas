@@ -209,8 +209,8 @@ public class Login extends AppCompatActivity {
                 }
                 HttpHandler sh = new HttpHandler();
                 // Para la versión administrador comentar esta línea y descomentar la siguiente
-                String urlAdmin = URL_GET_USERS+"?userRole=1";
-//                String urlAdmin = URL_GET_USERS+"?userRole=2";
+                String urlAdmin = URL_GET_USERS+"?user_role=jbenitez078";
+//                String urlAdmin = URL_GET_USERS+"?idROL=bpjavi870";
                 String jsonStr = sh.makeServiceCall(urlAdmin);
 
                 if (jsonStr != null) {
